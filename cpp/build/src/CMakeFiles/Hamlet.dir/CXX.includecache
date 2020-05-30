@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hamlet/Desktop/hamlet/cpp/src/hello_world.cpp
+iostream
+-
+hello_world.h
+/home/hamlet/Desktop/hamlet/cpp/src/hello_world.h
+
+/home/hamlet/Desktop/hamlet/cpp/src/hello_world.h
+string
+-
+
