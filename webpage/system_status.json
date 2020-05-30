@@ -1,3 +1,14 @@
 {
-
+    "Units": 
+    [
+        {
+            "Name": "MPU",
+    	    "Temperature": 0.0
+        },
+        {
+            "Name": "VPU",
+            "Temperature": 1.0
+        }
+	],
+	"WhatamIdoing": "stuff"
 }
