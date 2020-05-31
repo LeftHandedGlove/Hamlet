@@ -1,33 +1,27 @@
-<?php echo date('Y-m-d H:i:s') . "<br>"; ?>
-
-
-<?php
-    $sys_stat_path = "system_status.json";
-    $sys_stat_text = file_get_contents($sys_stat_path);
-    if ($sys_stat_text == false)
-    {
-        echo "Unable to find $sys_stat_path";
-    }
-    
-    $sys_stat_json = json_decode($sys_stat_text, true);
-    if($sys_stat_json == null)
-    {
-        echo "Unable to parse $sys_stat_path" . "<br>";
-        echo "File Contents:" . "<br>";
-        echo nl2br("$sys_stat_text") . "<br>";
-    }
-    
-    foreach ($sys_stat_json as $sys_field => $sys_value) 
-    {
-        if ($sys_field == "Units")
-        {
-            echo "$sys_field";
-            foreach ($sys_value as $unit_json)
+<!DOCTYPE html>
+<html>
+    <body>
+        <?php
+            $sys_stat_path = "./system_status.json";
+            $sys_stat_json = json_decode(file_get_contents($sys_stat_path));
+            foreach ($sys_stat_json as $sys_stat_key => $sys_stat_value)
             {
-                echo gettype($unit_json);
+                if ($sys_stat_key == "Units")
+                {
+                    foreach ($sys_stat_value as $unit_json)
+                    {
+                        echo "<h1>" . $unit_json->LongName . "</h1>" . "<br>";
+                        foreach ($unit_json as $unit_key => $unit_value)
+                        {
+                            echo $unit_key . ": " . $unit_value . "<br>";
+                        }
+                    }
+                }
+                else
+                {
+                    echo $sys_stat_key . ": " . $sys_stat_value . "<br>";
+                }
             }
-        }
-        //print_r($sys_field)
-        //print_r($sys_value)
-    }
-?>
+        ?>
+    </body>
+</html>
