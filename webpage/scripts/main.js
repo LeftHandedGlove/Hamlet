@@ -6,16 +6,17 @@ function updateCounter()
 {
     counter = counter + 1;
     document.querySelector('h1').textContent = counter.toString();
+    loadDoc(counter)
 }
 
-function loadDoc()
+function loadDoc(counter)
 {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
         if (this.readyState == 4 && this.status == 200) 
         {
-            document.getElementById("demo").innerHTML = this.responseText;
+            document.getElementById("demo").innerHTML = counter.toString();
         }
     };
     xhttp.open("GET", "ajax_info.txt", true);
