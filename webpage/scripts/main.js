@@ -1,46 +1,32 @@
-setInterval(updateCounter, 1000);
+setInterval(updateLastUpdate, 1000);
+setInterval(updateSystemStateFromDatabase, 1000);
 
-let counter = 0;
 
-function updateCounter()
+function updateLastUpdate()
 {
-    counter = counter + 1;
-    document.querySelector('h1').textContent = counter.toString();
-    loadDoc(counter);
+    var currentDate = new Date();
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var dateStr = "Last Update: " + months[currentDate.getMonth()] + ". " +
+                  ("00" + currentDate.getDate()).slice(-2) + ", " +
+                  currentDate.getFullYear() + " " +
+                  ("00" + currentDate.getHours()).slice(-2) + ":" +
+                  ("00" + currentDate.getMinutes()).slice(-2) + ":" +
+                  ("00" + currentDate.getSeconds()).slice(-2);
+    document.getElementById("last-update").innerHTML = dateStr;
 }
 
-function loadDoc(counter)
-{
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() 
-    {
-        if (this.readyState == 4 && this.status == 200) 
-        {
-            document.getElementById("demo").innerHTML = counter.toString();
-        }
-    };
-    xhttp.open("GET", "ajax_info.txt", true);
-    xhttp.send();
-}
 
-function loadQueryServer()
+function updateSystemStateFromDatabase()
 {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
         if (this.readyState == 4 && this.status == 200) 
         {
-            document.getElementById("query-server-section").innerHTML = this.response;
+            document.getElementById("query-server-section").innerHTML = this.responseText;
         }
     };
-    xhttp.open("GET", "query-server.php", true);
+    xhttp.open("GET", "scripts/query-server.php", true);
     xhttp.send();
 }
 
-// alert("Howdy")
-
-/*
-<?php
-    echo "Howdy";
-?>
-*/
