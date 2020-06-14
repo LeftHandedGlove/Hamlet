@@ -10,7 +10,7 @@ class HamletMySQLDataBase:
         self.__username = username
         self.__password = password
         self.__database = database
-        self.__cursor = None
+        self.cursor = None
 
     def open_connection(self):
         self.__connection = mysql.connector.connect(
@@ -19,13 +19,13 @@ class HamletMySQLDataBase:
             password=self.__password,
             database=self.__database
         )
-        self.__cursor = self.__connection.cursor()
+        self.cursor = self.__connection.cursor()
         atexit.register(self.close_connection)
 
     def close_connection(self):
         self.__connection.close()
         self.__connection = None
-        self.__cursor = None
+        self.cursor = None
         atexit.unregister(self.close_connection)
 
 
@@ -36,8 +36,8 @@ class SystemStateMonitorDB(HamletMySQLDataBase):
 
     def add_system_to_database_tables(self):
         # Check to see if the tables exist
-        self.__cursor.execute("SHOW TABLES")
-        print(self.__cursor)
+        self.cursor.execute("SHOW TABLES")
+        print(self.cursor)
 
     def update_table(self, table, columns, values):
         pass
