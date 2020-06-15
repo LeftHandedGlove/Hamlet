@@ -36,8 +36,8 @@ class SystemStateMonitorDB(HamletMySQLDataBase):
 
     def add_system_to_database_tables(self):
         # Check to see if the tables exist
-        print(self.cursor)
-        self.cursor.execute("SHOW TABLES")
+        result = self.cursor.execute("SELECT table_name FROM information_schema WHERE table_schema = 'system_state'")
+        print(result)
         print(self.cursor)
 
     def update_table(self, table, columns, values):
