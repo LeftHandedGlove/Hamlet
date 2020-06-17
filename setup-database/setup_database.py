@@ -29,25 +29,21 @@ class HamletMySQLDataBase:
         atexit.unregister(self.close_connection)
 
 
-class SystemStateMonitorDB(HamletMySQLDataBase):
-    def __init__(self):
-        super(SystemStateMonitorDB, self).__init__("localhost", "hamlet", "hamlet", "system_state")
-        self.__expected_system_tables = ["temperature"]
+def import_database_config():
+    with open('database_outline.yaml') as yaml_file:
+        data = yaml.load(yaml_file, Loader=yaml.FullLoader)
+        print(data)
+    return data
 
-    def add_system_to_database_tables(self):
-        # Check to see if the tables exist
-        self.cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'system_state'")
-        result = self.cursor.fetchall()
-        print(result)
-        print(self.cursor)
 
-    def update_table(self, table, columns, values):
-        pass
-        # Construct the query string
-        query = ""
+def setup_database(database_config):
+    pass
+    # Iterate through each expected table
+        # If the table exists then alter it to the new expected configuration
+        # If the table doesn't exist then create it
 
 
 if __name__ == "__main__":
-    sys_state_db = SystemStateMonitorDB()
-    sys_state_db.open_connection()
-    sys_state_db.add_system_to_database_tables()
+    database_config = import_database_config()
+    setup_database(database_config)
+    

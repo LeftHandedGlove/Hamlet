@@ -1,0 +1,56 @@
+system_state:
+  tables:
+
+    temperature:
+      id:
+        data_type: INT
+        length: null
+        allow_null: false
+        default_value: 0
+        auto_increment: false
+        constraint: PRIMARY KEY
+      cpu:
+        data_type: FLOAT
+        length: null
+        allow_null: false
+        default_value: 0.0
+        auto_increment: false
+        constraint: null
+      gpu:
+        data_type: FLOAT
+        length: 16
+        allow_null: false
+        default_value: 0.0
+        auto_increment: false
+        constraint: null
+        
+    services:
+      id:
+        data_type: INT
+        length: null
+        allow_null: false
+        default_value: 0
+        auto_increment: false
+        constraint: PRIMARY KEY
+      name:
+        data_type: VARCHAR
+        length: 255
+        allow_null: false
+        default_value: null
+        auto_increment: false
+        constraint: null
+      status:
+        data_type: VARCHAR
+        length: 255
+        allow_null: false
+        default_value: "UNKNOWN"
+        auto_increment: false
+        constraint: null
+      restart_count:
+        data_type: INT
+        length: null
+        allow_null: false
+        default_value: 0
+        auto_increment: false
+        constraint: null
+

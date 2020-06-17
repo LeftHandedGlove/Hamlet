@@ -32,14 +32,24 @@ class HamletMySQLDataBase:
 class SystemStateMonitorDB(HamletMySQLDataBase):
     def __init__(self):
         super(SystemStateMonitorDB, self).__init__("localhost", "hamlet", "hamlet", "system_state")
-        self.__expected_system_tables = ["temperature"]
+        self.__expected_system_tables = {
+            "temperature": "cpu_temp"
+        }
 
     def add_system_to_database_tables(self):
-        # Check to see if the tables exist
+        # Get all the tables in the system_state database
         self.cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'system_state'")
-        result = self.cursor.fetchall()
-        print(result)
-        print(self.cursor)
+        all_tables_sql_results = self.cursor.fetchall()
+        # Create a list of tables to create by removing the existing ones from the expected ones
+        tables_to_create = self.__expected_system_tables.copy()
+        for row_results in all_tables_sql_results:
+            table_name = row_results[0]
+            tables_to_create.remove(table_name)
+        # Create tables that need to be created
+        for table in tables_to_create:
+
+
+        
 
     def update_table(self, table, columns, values):
         pass
