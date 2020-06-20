@@ -92,12 +92,46 @@ class DatabaseManager:
             self.__db_connection.cursor.execute("SHOW TABLES LIKE '{0}'".format(table))
             all_results = self.__db_connection.cursor.fetchall()
             if len(all_results) == 0:
-                print("Unable to find table '{0}', creating it".format(table))
-                create_table_sql = "CREATE TABLE {0}(".format(table)
-                for col_name, col_config in self.__db_tables[table]['columns'].items():
-                    create_table_sql += "{0} {1},".format(col_name, col_config)
-                create_table_sql = create_table_sql[:-1] + ")"
-                self.__db_connection.cursor.execute(create_table_sql)
+                # If the table doesn't exist then create it
+                print("Unable to find '{0}' table, creating it".format(table))
+                self.__create_table(table)
+            else:
+                # If the table does exist then verify it has the right columns, 
+                # if it doesn't then drop the table and recreate it.
+                expected_columns = list(self.__db_tables[table].keys())
+                should_recreate_table = False
+                self.__db_connection.cursor.execute(
+                    "SELECT column_name FROM information_schema.columns " +
+                    "WHERE table_schema='{0}' AND table_name='{1}'".format(
+                        self.__db_name, table))
+                all_results = self.__db_connection.cursor.fetchall()
+                # Iterate over each result and remove it from the expected tables list
+                for results_row in all_results:
+                    col_name = results_row[0]
+                    if col_name in expected_columns:
+                        expected_columns.remove(col_name)
+                    else:
+                        # If a column exists that wasn't expected then recreate the table
+                        print("Unexpected column '{0}' found in '{1}' table!".format(col_name, table))
+                        should_recreate_table = True
+                if len(expected_columns) != 0:
+                    # If a column wasn't in the results then recreate the table
+                    print("Not enough columns found in '{0}' table!".format(table))
+                    should_recreate_table = True
+                if should_recreate_table:
+                    print("Dropping and recreating '{0}' table".format(table))
+                    self.__db_connection.cursor.execute("DROP TABLE {0}".format(table))
+                    self.__create_table(table)
+                else:
+                    print("The '{0}' table seems to be okay".format(table))
+
+
+    def __create_table(self, table_name):
+        create_table_sql = "CREATE TABLE {0}(".format(table_name)
+        for col_name, col_sql_str in self.__db_tables[table_name]['columns'].items():
+            create_table_sql += "{0} {1},".format(col_name, col_sql_str)
+        create_table_sql = create_table_sql[:-1] + ")"
+        self.__db_connection.cursor.execute(create_table_sql)
     
     def __remove_old_data(self):
         pass
