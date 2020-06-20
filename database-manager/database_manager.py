@@ -98,7 +98,7 @@ class DatabaseManager:
             else:
                 # If the table does exist then verify it has the right columns, 
                 # if it doesn't then drop the table and recreate it.
-                expected_columns = list(self.__db_tables[table].keys())
+                expected_columns = list(self.__db_tables[table]['columns'].keys())
                 should_recreate_table = False
                 self.__db_connection.cursor.execute(
                     "SELECT column_name FROM information_schema.columns " +
