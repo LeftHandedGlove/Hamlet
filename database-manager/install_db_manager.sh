@@ -14,29 +14,28 @@ if [ $EUID -ne 0 ]; then
     exit 1
 fi
 
-printf "Installing the Hamlet Database Manager.\n"
+echo "Installing the Hamlet Database Manager."
 
 # Create install dir
-printf "Creating the installation directory.."
+echo "Creating the installation directory"
 INSTALL_DIR="/opt/hamlet/database-manager"
 rm -rf $INSTALL_DIR
 mkdir -p $INSTALL_DIR
-printf ".Done!\n"
 
 # Copy files into install directory
-printf "Copying files into the installation directory.."
+echo "Copying files into the installation directory"
 cd $REPO_DIR
 cp -r * $INSTALL_DIR
-printf ".Done!\n"
 
 # Register the service
-printf "Registering the hamlet-db-manager service.."
+echo "Registering the hamlet-db-manager service"
 cd $INSTALL_DIR
+systemctl daemon-reload
 systemctl stop hamlet-db-manager > /dev/null || exit 0
 systemctl disable hamlet-db-manager > /dev/null || exit 0
 cp hamlet-db-manager.service /etc/systemd/system
 systemctl start hamlet-db-manager > /dev/null
 systemctl enable hamlet-db-manager > /dev/null
-printf ".Done!\n"
+systemctl daemon-reload
 
-printf "Installation Complete!\n"
+echo "Installation Complete!"
