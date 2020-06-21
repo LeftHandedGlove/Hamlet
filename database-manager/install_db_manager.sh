@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Fail quickly to prevent issues
 set -e
 
