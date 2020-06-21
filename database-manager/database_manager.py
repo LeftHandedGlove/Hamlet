@@ -146,7 +146,7 @@ class DatabaseManager:
     def remove_old_data(self):
         for table in self.__db_tables:
             data_lifetime = self.__db_tables[table]['data_lifetime']
-            if database_manager is not None:
+            if data_lifetime is not None:
                 self.__db_connection.command("DELETE FROM {0} WHERE timestamp < (NOW() - INTERVAL {1})".format(table, data_lifetime))
 
     
