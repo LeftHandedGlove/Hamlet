@@ -24,7 +24,7 @@ class MySQLDatabaseConnection:
         print("  Password: {0}".format(self.__password))
         start_time = time.time()
         while True:
-            if time.time() - start_time < timeout:
+            if time.time() - start_time > timeout:
                 print("Timed out connecting to database")
                 raise TimeoutError
             try:
