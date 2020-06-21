@@ -95,7 +95,7 @@ class DatabaseManager:
         except KeyboardInterrupt:
             print("Interrupted by keyboard.")
             self.stop()
-        except Exception as e
+        except Exception as e:
             print("Something unexpected happened!")
             print(e)
             raise e
