@@ -93,7 +93,10 @@ class DatabaseManager:
         # Run the main function until told to stop
         try:
             while(self.__running):
+                before_run_once = time.time()
                 self.__run_once()
+                run_once_time = time.time() - before_run_once
+                time.sleep(self.__check_interval - run_once_time)
         except KeyboardInterrupt:
             print("Interrupted by keyboard.")
         except Exception as e:
@@ -118,6 +121,7 @@ class DatabaseManager:
         print("Setting up database: {0}".format(self.__db_name))
         # Iterate over all of the tables
         for table in self.__db_tables.keys():
+            print("Checking the '{0}' table".format(table))
             # Make sure the table exists
             all_results = self.__db_connection.command("SHOW TABLES LIKE '{0}'".format(table))
             if len(all_results) == 0:
