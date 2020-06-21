@@ -1,3 +1,6 @@
+# Fail quickly to prevent issues
+set -e
+
 # Useful variables
 DATE=$(date +'%h-%d-%Y_%H-%M-%S')
 # Get the location of this install script, it should be the top level of the code directory
