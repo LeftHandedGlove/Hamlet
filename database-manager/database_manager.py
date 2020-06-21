@@ -4,6 +4,7 @@ import yaml
 import time
 import os
 import subprocess
+import sys
 
 
 class MySQLDatabaseConnection:
@@ -15,18 +16,28 @@ class MySQLDatabaseConnection:
         self.__database = database
         self.cursor = None
 
-    def open_connection(self):
+    def open_connection(self, timeout=60):
         print("Opening connection to database...")
         print("  Database: {0}".format(self.__database))
         print("  Address:  {0}".format(self.__address))
         print("  User:     {0}".format(self.__username))
         print("  Password: {0}".format(self.__password))
-        self.__connection = mysql.connector.connect(
-            host=self.__address,
-            user=self.__username,
-            password=self.__password,
-            database=self.__database
-        )
+        start_time = time.time()
+        while True:
+            if time.time() - start_time < timeout:
+                print("Timed out connecting to database")
+                raise TimeoutError
+            try:
+                self.__connection = mysql.connector.connect(
+                    host=self.__address,
+                    user=self.__username,
+                    password=self.__password,
+                    database=self.__database
+                )
+            except:
+                print("Failed to connect to database. Trying again...")
+                time.sleep(1)
+        print("Connected to database")
         self.cursor = self.__connection.cursor()
         atexit.register(self.close_connection)
 
@@ -165,7 +176,14 @@ class DatabaseManager:
 
     
 if __name__ == "__main__":
-    database_manager = DatabaseManager(os.path.abspath('database_outline.yaml'))
+    # Get the python files location
+    if getattr(sys, 'frozen', False):
+        python_file_dir = os.path.dirname(sys.executable)
+    else:
+        python_file_dir = os.path.dirname(os.path.realpath(__file__))
+    db_config_path = os.path.abspath(os.path.join(python_file_dir, 'database_outline.yaml'))
+    # Start the database manager
+    database_manager = DatabaseManager(db_config_path)
     database_manager.start()
     
     
