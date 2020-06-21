@@ -64,24 +64,26 @@ class DatabaseManager:
         self.__running = False
 
     def start(self):
-        print("Starting Database Manager")
-        self.__import_database_config()
-        self.__db_connection = MySQLDatabaseConnection(
-            self.__db_address, 
-            self.__db_user, 
-            self.__db_password, 
-            self.__db_name)
-        self.__db_connection.open_connection()
-        self.__setup_database()
-        self.__running = True
-        self.__run_constantly()
-        atexit.register(self.stop)
+        if not self.__running:
+            print("Starting Database Manager")
+            self.__import_database_config()
+            self.__db_connection = MySQLDatabaseConnection(
+                self.__db_address, 
+                self.__db_user, 
+                self.__db_password, 
+                self.__db_name)
+            self.__db_connection.open_connection()
+            self.__setup_database()
+            self.__running = True
+            self.__run_constantly()
+            atexit.register(self.stop)
 
     def stop(self):
-        print("Stopping Database Manager")
-        self.__running = False
-        self.__db_connection.close_connection()
-        atexit.unregister(self.stop)
+        if self.__running:
+            print("Stopping Database Manager")
+            self.__running = False
+            self.__db_connection.close_connection()
+            atexit.unregister(self.stop)
 
     def __run_once(self):
         self.remove_old_data()
@@ -94,10 +96,10 @@ class DatabaseManager:
                 self.__run_once()
         except KeyboardInterrupt:
             print("Interrupted by keyboard.")
-            self.stop()
         except Exception as e:
             print("Something unexpected happened!")
             print(e)
+            self.stop()
             raise e
 
     def __import_database_config(self):
