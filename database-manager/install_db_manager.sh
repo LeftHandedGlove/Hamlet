@@ -32,11 +32,11 @@ printf ".Done!\n"
 # Register the service
 printf "Registering the hamlet-db-manager service.."
 cd $INSTALL_DIR
-systemctl stop hamlet-db-manager 2>&1 /dev/null || exit 0
-systemctl disable hamlet-db-manager 2>&1 /dev/null || exit 0
+systemctl stop hamlet-db-manager > /dev/null || exit 0
+systemctl disable hamlet-db-manager > /dev/null || exit 0
 cp hamlet-db-manager.service /etc/systemd/system
-systemctl start hamlet-db-manager 2>&1 /dev/null
-systemctl enable hamlet-db-manager 2>&1 /dev/null
+systemctl start hamlet-db-manager > /dev/null
+systemctl enable hamlet-db-manager > /dev/null
 printf ".Done!\n"
 
 printf "Installation Complete!\n"
