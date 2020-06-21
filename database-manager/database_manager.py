@@ -37,9 +37,14 @@ class MySQLDatabaseConnection:
         self.cursor = None
         atexit.unregister(self.close_connection)
 
-    def query(self, sql_query):
+    def command(self, sql_query):
         self.cursor.execute(sql_query)
-        return self.cursor.fetchall()
+        try:
+            result = self.cursor.fetchall()
+        except mysql.connector.errors.InterfaceError:
+            # The command didn't return any data
+            result = None
+        return result
 
     def create_table(self, table_name, column_config_dict):
         create_table_sql = "CREATE TABLE {0}(".format(table_name)
@@ -104,7 +109,7 @@ class DatabaseManager:
         # Iterate over all of the tables
         for table in self.__db_tables.keys():
             # Make sure the table exists
-            all_results = self.__db_connection.query("SHOW TABLES LIKE '{0}'".format(table))
+            all_results = self.__db_connection.command("SHOW TABLES LIKE '{0}'".format(table))
             if len(all_results) == 0:
                 # If the table doesn't exist then create it
                 print("Unable to find '{0}' table, creating it".format(table))
@@ -114,7 +119,7 @@ class DatabaseManager:
                 # if it doesn't then drop the table and recreate it.
                 expected_columns = list(self.__db_tables[table]['columns'].keys())
                 should_recreate_table = False
-                all_results = self.__db_connection.query(
+                all_results = self.__db_connection.command(
                     "SELECT column_name FROM information_schema.columns " +
                     "WHERE table_schema='{0}' AND table_name='{1}'".format(
                         self.__db_name, table))
@@ -142,7 +147,7 @@ class DatabaseManager:
         for table in self.__db_tables:
             data_lifetime = self.__db_tables[table]['data_lifetime']
             if database_manager is not None:
-                self.__db_connection.query("DELETE FROM {0} WHERE timestamp < (NOW() - INTERVAL {1})".format(table, data_lifetime))
+                self.__db_connection.command("DELETE FROM {0} WHERE timestamp < (NOW() - INTERVAL {1})".format(table, data_lifetime))
 
     
 if __name__ == "__main__":
