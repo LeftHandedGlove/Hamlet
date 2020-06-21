@@ -89,8 +89,16 @@ class DatabaseManager:
     def __run_constantly(self):
         print("Entering main loop")
         # Run the main function until told to stop
-        while(self.__running):
-            self.__run_once()
+        try:
+            while(self.__running):
+                self.__run_once()
+        except KeyboardInterrupt:
+            print("Interrupted by keyboard.")
+            self.stop()
+        except Exception as e
+            print("Something unexpected happened!")
+            print(e)
+            raise e
 
     def __import_database_config(self):
         print("Loading Database Config: {0}".format(self.__db_config_path))
