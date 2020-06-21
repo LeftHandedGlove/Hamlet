@@ -34,7 +34,7 @@ class MySQLDatabaseConnection:
                     password=self.__password,
                     database=self.__database
                 )
-                break*/-9
+                break
             except:
                 print("Failed to connect to database. Trying again...")
                 time.sleep(1)
