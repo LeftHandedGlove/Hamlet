@@ -5,7 +5,11 @@ import time
 import os
 import subprocess
 import sys
+import logging
 
+def log_message(msg):
+    logging.info(msg)
+    sys.stdout.flush()
 
 class MySQLDatabaseConnection:
     def __init__(self, address, username, password, database):
@@ -17,15 +21,15 @@ class MySQLDatabaseConnection:
         self.cursor = None
 
     def open_connection(self, timeout=60):
-        print("Opening connection to database...")
-        print("  Database: {0}".format(self.__database))
-        print("  Address:  {0}".format(self.__address))
-        print("  User:     {0}".format(self.__username))
-        print("  Password: {0}".format(self.__password))
+        log_message("Opening connection to database...")
+        log_message("  Database: {0}".format(self.__database))
+        log_message("  Address:  {0}".format(self.__address))
+        log_message("  User:     {0}".format(self.__username))
+        log_message("  Password: {0}".format(self.__password))
         start_time = time.time()
         while True:
             if time.time() - start_time > timeout:
-                print("Timed out connecting to database")
+                log_message("Timed out connecting to database")
                 raise TimeoutError
             try:
                 self.__connection = mysql.connector.connect(
@@ -36,14 +40,14 @@ class MySQLDatabaseConnection:
                 )
                 break
             except:
-                print("Failed to connect to database. Trying again...")
+                log_message("Failed to connect to database. Trying again...")
                 time.sleep(1)
-        print("Connected to database")
+        log_message("Connected to database")
         self.cursor = self.__connection.cursor()
         atexit.register(self.close_connection)
 
     def close_connection(self):
-        print("Closing connection to database")
+        log_message("Closing connection to database")
         self.__connection.close()
         self.__connection = None
         self.cursor = None
@@ -77,7 +81,7 @@ class DatabaseManager:
 
     def start(self):
         if not self.__running:
-            print("Starting Database Manager")
+            log_message("Starting Database Manager")
             self.__import_database_config()
             self.__db_connection = MySQLDatabaseConnection(
                 self.__db_address, 
@@ -92,7 +96,7 @@ class DatabaseManager:
 
     def stop(self):
         if self.__running:
-            print("Stopping Database Manager")
+            log_message("Stopping Database Manager")
             self.__running = False
             self.__db_connection.close_connection()
             atexit.unregister(self.stop)
@@ -101,7 +105,7 @@ class DatabaseManager:
         self.remove_old_data()
 
     def __run_constantly(self):
-        print("Entering main loop")
+        log_message("Entering main loop")
         # Run the main function until told to stop
         try:
             while(self.__running):
@@ -110,15 +114,15 @@ class DatabaseManager:
                 run_once_time = time.time() - before_run_once
                 time.sleep(self.__check_interval - run_once_time)
         except KeyboardInterrupt:
-            print("Interrupted by keyboard.")
+            log_message("Interrupted by keyboard.")
         except Exception as e:
-            print("Something unexpected happened!")
-            print(e)
+            log_message("Something unexpected happened!")
+            log_message(e)
             self.stop()
             raise e
 
     def __import_database_config(self):
-        print("Loading Database Config: {0}".format(self.__db_config_path))
+        log_message("Loading Database Config: {0}".format(self.__db_config_path))
         # Parse the database config file
         with open(self.__db_config_path) as yaml_file:
             db_config_data = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -130,15 +134,15 @@ class DatabaseManager:
         self.__db_tables = db_config_data['tables']
 
     def __setup_database(self):
-        print("Setting up database: {0}".format(self.__db_name))
+        log_message("Setting up database: {0}".format(self.__db_name))
         # Iterate over all of the tables
         for table in self.__db_tables.keys():
-            print("Checking the '{0}' table".format(table))
+            log_message("Checking the '{0}' table".format(table))
             # Make sure the table exists
             all_results = self.__db_connection.command("SHOW TABLES LIKE '{0}'".format(table))
             if len(all_results) == 0:
                 # If the table doesn't exist then create it
-                print("Unable to find '{0}' table, creating it".format(table))
+                log_message("Unable to find '{0}' table, creating it".format(table))
                 self.__db_connection.create_table(table, self.__db_tables[table]['columns'])
             else:
                 # If the table does exist then verify it has the right columns, 
@@ -156,18 +160,18 @@ class DatabaseManager:
                         expected_columns.remove(col_name)
                     else:
                         # If a column exists that wasn't expected then recreate the table
-                        print("Unexpected column '{0}' found in '{1}' table!".format(col_name, table))
+                        log_message("Unexpected column '{0}' found in '{1}' table!".format(col_name, table))
                         should_recreate_table = True
                 if len(expected_columns) != 0:
                     # If a column wasn't in the results then recreate the table
-                    print("Not enough columns found in '{0}' table!".format(table))
+                    log_message("Not enough columns found in '{0}' table!".format(table))
                     should_recreate_table = True
                 if should_recreate_table:
-                    print("Dropping and recreating '{0}' table".format(table))
+                    log_message("Dropping and recreating '{0}' table".format(table))
                     self.__db_connection.drop_table(table)
                     self.__db_connection.create_table(table, self.__db_tables[table]['columns'])
                 else:
-                    print("The '{0}' table seems to be okay".format(table))
+                    log_message("The '{0}' table seems to be okay".format(table))
 
     def remove_old_data(self):
         for table in self.__db_tables:
@@ -177,6 +181,8 @@ class DatabaseManager:
 
     
 if __name__ == "__main__":
+    # Setup the logger
+    logging.basicConfig(filename="db_manager.log", level=logging.DEBUG)
     # Get the python files location
     if getattr(sys, 'frozen', False):
         python_file_dir = os.path.dirname(sys.executable)
