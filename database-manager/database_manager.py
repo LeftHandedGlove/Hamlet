@@ -6,8 +6,11 @@ import os
 import subprocess
 import sys
 
-def print_msg(msg):
-    print(msg)
+def print_msg(msg, end=None):
+    if end is None:
+        print(msg)
+    else:
+        print(msg, end=end)
     sys.stdout.flush()
 
 class MySQLDatabaseConnection:
@@ -107,7 +110,13 @@ class DatabaseManager:
         print_msg("Entering main loop")
         # Run the main function until told to stop
         try:
+            spinner = ["|", "/", "-", "\"]
+            cur_spinner = 0
             while(self.__running):
+                print(spinner[cur_spinner], end="\r")
+                cur_spinner += 1
+                if cur_spinner >= len(spinner):
+                    cur_spinner = 0    
                 before_run_once = time.time()
                 self.__run_once()
                 run_once_time = time.time() - before_run_once
