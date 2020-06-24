@@ -110,7 +110,7 @@ class DatabaseManager:
         print_msg("Entering main loop")
         # Run the main function until told to stop
         try:
-            spinner = ["|", "/", "-", "\"]
+            spinner = ["|", "/", "-", "\\"]
             cur_spinner = 0
             while(self.__running):
                 print(spinner[cur_spinner], end="\r")
