@@ -110,14 +110,8 @@ class DatabaseManager:
         print_msg("Entering main loop")
         # Run the main function until told to stop
         try:
-            spinner = ["|", "/", "-", "\\"]
-            cur_spinner = 0
             while(self.__running):
                 before_run_once = time.time()
-                print(spinner[cur_spinner], end="\r")
-                cur_spinner += 1
-                if cur_spinner >= len(spinner):
-                    cur_spinner = 0
                 self.__run_once()
                 run_once_time = time.time() - before_run_once
                 if run_once_time > self.__check_interval:
