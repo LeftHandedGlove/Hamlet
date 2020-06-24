@@ -8,7 +8,7 @@ import sys
 import logging
 
 def log_message(msg):
-    logging.info(msg)
+    logger.info(msg)
     sys.stdout.flush()
 
 class MySQLDatabaseConnection:
@@ -182,7 +182,13 @@ class DatabaseManager:
     
 if __name__ == "__main__":
     # Setup the logger
-    logging.basicConfig(filename="db_manager.log", level=logging.DEBUG)
+    logger = logging.getLogger('db_manager')
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
     # Get the python files location
     if getattr(sys, 'frozen', False):
         python_file_dir = os.path.dirname(sys.executable)
