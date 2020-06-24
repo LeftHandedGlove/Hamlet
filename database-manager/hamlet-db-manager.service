@@ -1,0 +1,9 @@
+[Unit]
+Description=Hamlet Database Manager
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/hamlet/database-manager/database_manager.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
