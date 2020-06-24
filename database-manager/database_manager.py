@@ -113,14 +113,17 @@ class DatabaseManager:
             spinner = ["|", "/", "-", "\\"]
             cur_spinner = 0
             while(self.__running):
+                before_run_once = time.time()
                 print(spinner[cur_spinner], end="\r")
                 cur_spinner += 1
                 if cur_spinner >= len(spinner):
-                    cur_spinner = 0    
-                before_run_once = time.time()
+                    cur_spinner = 0
                 self.__run_once()
                 run_once_time = time.time() - before_run_once
-                time.sleep(self.__check_interval - run_once_time)
+                if run_once_time > self.__check_interval:
+                    print_msg("!!! Main loop is taking too long and has fallen behind !!!")
+                else:
+                    time.sleep(self.__check_interval - run_once_time)
         except KeyboardInterrupt:
             print_msg("Interrupted by keyboard.")
         except Exception as e:
