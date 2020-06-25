@@ -1,0 +1,3 @@
+[submodule "database-manager/Hamlet-Common"]
+	path = database-manager/Hamlet-Common
+	url = https://github.com/LeftHandedGlove/Hamlet-Common.git
