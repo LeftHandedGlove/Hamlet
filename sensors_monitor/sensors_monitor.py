@@ -31,10 +31,12 @@ class SensorsMonitor:
         self.__db_conn.drop_table('sensors')
         self.__db_conn.create_table('sensors')
         # Fill table with default sensor values
+        print_msg("Adding sensor entries to sensors table")
         for sensor in self.__sensors:
             for attribute in sensor.sensor_data.keys():
-                sql_query = ("INSERT INTO sensors(attribute) "
-                             "VALUES ({0})"
+                print_msg("  Adding '{0}'".format(attribute))
+                sql_query = ("INSERT INTO sensors (attribute) "
+                             "VALUES ('{0}')"
                              .format(attribute))
                 self.__db_conn.command(sql_query)
         self.__run_continuously()
@@ -50,12 +52,13 @@ class SensorsMonitor:
             for attribute, value in sensor.sensor_data.items():
                 sql_query = ("UPDATE sensors "
                              "SET value = {0}, state = '{1}' "
-                             "WHERE attribute = {2}"
+                             "WHERE attribute = '{2}'"
                              .format(value, sensor.state, attribute))
                 self.__db_conn.command(sql_query)
 
     def __run_continuously(self):
         try:
+            print_msg("Entering main loop")
             while True:
                 self.__run_once()
         except KeyboardInterrupt:
