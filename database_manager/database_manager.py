@@ -1,14 +1,13 @@
-import mysql.connector
 import atexit
 import yaml
 import time
 import os
 import subprocess
 import sys
+import argparse
 
-
-from ..common.python_utils import hamlet_top_dir, print_msg
-from ..common.mysql_database_connection import MySQLDatabaseConnection
+from hamlet_common.python_utils import print_msg
+from hamlet_common.mysql_database_connection import MySQLDatabaseConnection
 
 
 class DatabaseManager:
@@ -122,10 +121,11 @@ class DatabaseManager:
 
     
 if __name__ == "__main__":
-    
-    db_config_path = os.path.abspath(os.path.join(hamlet_top_dir, 'database-manager', 'database_outline.yaml'))
+    # Parse the arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", default="/opt/hamlet/database_manager/database_outline.yaml", help="Path to database configuration .yaml file")
+    args = parser.parse_args()
+    db_config_path = os.path.abspath(args.config)
     # Start the database manager
     database_manager = DatabaseManager(db_config_path)
     database_manager.start()
-    
-    
