@@ -14,11 +14,11 @@ if [ $EUID -ne 0 ]; then
     exit 1
 fi
 
-echo "Installing the Hamlet Database Manager."
+echo "Installing the Hamlet Sensors Monitor."
 
 # Create install dir
 echo "Creating the installation directory"
-INSTALL_DIR="/opt/hamlet/database-manager"
+INSTALL_DIR="/opt/hamlet/sensors_monitor"
 rm -rf $INSTALL_DIR
 mkdir -p $INSTALL_DIR
 
@@ -28,14 +28,14 @@ cd $REPO_DIR
 cp -r * $INSTALL_DIR
 
 # Register the service
-echo "Registering the hamlet_db_manager service"
+echo "Registering the hamlet_sensors_monitor service"
 cd $INSTALL_DIR
 systemctl daemon-reload
-systemctl stop hamlet_db_manager > /dev/null || exit 0
-systemctl disable hamlet_db_manager > /dev/null || exit 0
-cp hamlet_db_manager.service /etc/systemd/system
-systemctl start hamlet_db_manager > /dev/null
-systemctl enable hamlet_db_manager > /dev/null
+systemctl stop hamlet_sensors_monitor > /dev/null || exit 0
+systemctl disable hamlet_sensors_monitor > /dev/null || exit 0
+cp hamlet_sensors_monitor.service /etc/systemd/system
+systemctl start hamlet_sensors_monitor > /dev/null
+systemctl enable hamlet_sensors_monitor > /dev/null
 systemctl daemon-reload
 
 echo "Installation Complete!"

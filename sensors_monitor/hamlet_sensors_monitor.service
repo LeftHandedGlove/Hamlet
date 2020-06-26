@@ -1,0 +1,9 @@
+[Unit]
+Description=Hamlet Sensors Monitor
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/hamlet/sensors_monitor/sensors_monitor.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

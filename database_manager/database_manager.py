@@ -14,38 +14,33 @@ class DatabaseManager:
     def __init__(self, database_config_path, check_interval=1):
         self.__db_config_path = database_config_path
         self.__check_interval = check_interval
-        self.__running = False
 
     def start(self):
-        if not self.__running:
-            print_msg("Starting Database Manager")
-            self.__import_database_config()
-            self.__db_connection = MySQLDatabaseConnection(
-                self.__db_address, 
-                self.__db_user, 
-                self.__db_password, 
-                self.__db_name)
-            self.__db_connection.open_connection()
-            self.__setup_database()
-            self.__running = True
-            self.__run_constantly()
-            atexit.register(self.stop)
+        print_msg("Starting Database Manager")
+        atexit.register(self.stop)
+        self.__import_database_config()
+        self.__db_connection = MySQLDatabaseConnection(
+            self.__db_address, 
+            self.__db_user, 
+            self.__db_password, 
+            self.__db_name)
+        self.__db_connection.open_connection()
+        self.__setup_database()
+        self.__run_continuously()
 
     def stop(self):
-        if self.__running:
-            print_msg("Stopping Database Manager")
-            self.__running = False
-            self.__db_connection.close_connection()
-            atexit.unregister(self.stop)
+        print_msg("Stopping Database Manager")
+        atexit.unregister(self.stop)
+        self.__db_connection.close_connection()
 
     def __run_once(self):
         self.remove_old_data()
 
-    def __run_constantly(self):
+    def __run_continuously(self):
         print_msg("Entering main loop")
         # Run the main function until told to stop
         try:
-            while(self.__running):
+            while True:
                 before_run_once = time.time()
                 self.__run_once()
                 run_once_time = time.time() - before_run_once
