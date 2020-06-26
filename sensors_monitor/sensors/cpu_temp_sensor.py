@@ -7,7 +7,7 @@ class CPUTemperatureSensor(BaseSensor):
     def __init__(self):
         self.name = "CPU Temperature"
         self.sensor_data = {
-            "CPU Temperature (C)": 00.0
+            "CPU Temperature C": 00.0
         }
         self.read_timeout_ms = 100
 
