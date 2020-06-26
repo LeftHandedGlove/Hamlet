@@ -1,6 +1,6 @@
 import subprocess
 
-from .base_sensor import BaseSensor
+from sensors.base_sensor import BaseSensor
 
 
 class CPUTemperatureSensor(BaseSensor):
@@ -14,5 +14,5 @@ class CPUTemperatureSensor(BaseSensor):
     def read_sensor_data(self):
         result = subprocess.run(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE)
         raw_output = str(result.stdout)
-        cpu_temp = raw_output.replace('temp=', '').replace('\'C', '')
+        cpu_temp = str(raw_output.replace('temp=', '').replace('\'C', '')).strip()
         self.sensor_data['cpu_temp'] = float(cpu_temp)
