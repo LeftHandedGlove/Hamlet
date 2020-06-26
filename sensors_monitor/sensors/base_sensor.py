@@ -1,6 +1,6 @@
 import multiprocessing
 
-from sensors_monitor.hamlet_common.python_utils import print_msg
+from hamlet_common.python_utils import print_msg
 
 class BaseSensor:
     unknown = 'UNKNOWN'

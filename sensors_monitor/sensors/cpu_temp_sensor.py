@@ -1,6 +1,6 @@
 import subprocess
 
-from base_sensor import BaseSensor
+from .base_sensor import BaseSensor
 
 
 class CPUTemperatureSensor(BaseSensor):

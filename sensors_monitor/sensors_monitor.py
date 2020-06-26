@@ -1,10 +1,19 @@
+# As this is the entry point for the script the system path should 
+# include this so imports are relative to this file's parent directory
+import sys
+import os
+if getattr(sys, 'frozen', False):
+    sys.path.append(os.path.dirname(sys.executable))
+else:
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import atexit
 import yaml
 
 from hamlet_common.mysql_database_connection import MySQLDatabaseConnection
 from hamlet_common.python_utils import print_msg
 
-from cpu_temp_sensor import CPUTemperatureSensor
+from sensors.cpu_temp_sensor import CPUTemperatureSensor
 
 class SensorsMonitor:
     def __init__(self):
@@ -17,6 +26,7 @@ class SensorsMonitor:
         print_msg("Starting Sensors Monitor")
         atexit.register(self.stop)
         self.__db_conn = MySQLDatabaseConnection()
+        self.__db_conn.open_connection()
         # Drop and recreate sensor database table
         self.__db_conn.drop_table('sensors')
         self.__db_conn.create_table('sensors')
