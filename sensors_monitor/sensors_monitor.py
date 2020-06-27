@@ -24,7 +24,7 @@ class SensorsMonitor:
         self.__data_queue = multiprocessing.Queue()
         self.__sensors = [
             CPUTemperatureSensor(
-                poll_rate_hz=1, 
+                poll_rate_hz=5, 
                 monitor_error_queue=self.__error_queue, 
                 db_table=self.__table_name, 
                 monitor_index=0
