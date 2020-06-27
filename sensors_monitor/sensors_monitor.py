@@ -19,10 +19,16 @@ from sensors.cpu_temp_sensor import CPUTemperatureSensor
 class SensorsMonitor:
     def __init__(self):
         self.__db_conn = None
+        self.__table_name = 'sensors'
         self.__error_queue = multiprocessing.Queue()
         self.__data_queue = multiprocessing.Queue()
         self.__sensors = [
-            CPUTemperatureSensor(poll_rate_hz=1, monitor_error_queue=self.__error_queue, db_table='sensor', monitor_index=0)
+            CPUTemperatureSensor(
+                poll_rate_hz=1, 
+                monitor_error_queue=self.__error_queue, 
+                db_table=self.__table_name, 
+                monitor_index=0
+            )
         ]
 
     def start(self):
@@ -31,8 +37,8 @@ class SensorsMonitor:
         self.__db_conn = MySQLDatabaseConnection()
         self.__db_conn.open_connection()
         # Drop and recreate sensor database table
-        self.__db_conn.drop_table('sensors')
-        self.__db_conn.create_table('sensors')
+        self.__db_conn.drop_table(self.__table_name)
+        self.__db_conn.create_table(self.__table_name)
         # Fill table with default sensor values
         print_msg("Adding sensor entries to sensors table")
         for sensor in self.__sensors:
@@ -53,10 +59,19 @@ class SensorsMonitor:
         self.__db_conn.close_connection()
 
     def __run_once(self):
+        # Wait until a service fails
         failed_process_index, failed_process_poll_rate = self.__error_queue.get(block=True)
+        # Get the sensor class so it can be recreated
         failed_process_class = type(self.__sensors[failed_process_index])
-        self.__sensors[failed_process_index] = failed_process_class(poll_rate_hz=failed_process_poll_rate, db_table='sensor', monitor_error_queue=self.__error_queue, monitor_index=failed_process_index)
+        # Recreate the sensor process
+        self.__sensors[failed_process_index] = failed_process_class(
+            poll_rate_hz=failed_process_poll_rate, 
+            db_table=self.__table_name, 
+            monitor_error_queue=self.__error_queue, 
+            monitor_index=failed_process_index
+        )
         self.__sensors[failed_process_index].start()
+        
     def __run_continuously(self):
         try:
             print_msg("Entering main loop")
