@@ -1,6 +1,7 @@
 import subprocess
 import multiprocessing
 import time
+import traceback
 
 from hamlet_common.python_utils import print_msg                                # pylint: disable=import-error
 from hamlet_common.mysql_database_connection import MySQLDatabaseConnection     # pylint: disable=import-error
@@ -49,10 +50,10 @@ class CPUTemperatureSensor(multiprocessing.Process):
                         self.sensor_data[attribute] = value
                 # Report the data
                 for attribute, value in self.sensor_data:
-                    sql_query = ("UPDATE {0} "
-                                 "SET value = {1}, state = '{2}' "
-                                 "WHERE attribute = '{3}'"
-                                 .format(self.__db_table, value, self.state, attribute))
+                    sql_query = ("UPDATE {table} "
+                                 "SET value = {val}, state = '{state}' "
+                                 "WHERE attribute = '{attr}'"
+                                 .format(table=self.__db_table, val=value, state=self.state, attr=attribute))
                     self.__db_conn.command(sql_query)
                 # Determine how much time to sleep
                 loop_time_s = time.time() - start_time
@@ -61,8 +62,8 @@ class CPUTemperatureSensor(multiprocessing.Process):
                 else:
                     print_msg("The {0} sensor process is falling behind!".format(self.name))
         except Exception as e:
+            traceback.print_tb(e.__traceback__)
             print_msg("The {0} sensor process has crashed!".format(self.name))
-            print_msg(e)
             queue_data = (self.__monitor_index, self.__poll_rate_hz)
             self.__monitor_error_queue.put(queue_data, block=False)
 
