@@ -12,7 +12,6 @@ class CPUTemperatureSensor(BaseSensor):
         self.sensor_data = {
             'CPU Temperature C': 0.0
         }
-        print(repr())
     def read_sensor_data(self, data_queue):
         # Read from the CPU thermal zone file 
         with open("/sys/class/thermal/thermal_zone0/temp", "r") as temp_file:
