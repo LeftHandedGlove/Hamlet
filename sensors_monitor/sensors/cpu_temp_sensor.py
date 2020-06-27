@@ -1,12 +1,8 @@
 import subprocess
-import multiprocessing
-import time
-import traceback
 
-from hamlet_common.python_utils import print_msg                                # pylint: disable=import-error
-from hamlet_common.mysql_database_connection import MySQLDatabaseConnection     # pylint: disable=import-error
-
-from .base_sensor import BaseSensor
+# pylint: disable=import-error
+from sensors.base_sensor import BaseSensor 
+# pylint: enable=import-error
 
 
 class CPUTemperatureSensor(BaseSensor):
@@ -14,13 +10,17 @@ class CPUTemperatureSensor(BaseSensor):
         super(CPUTemperatureSensor, self).__init__(poll_rate_hz, db_table, monitor_error_queue, monitor_index)
         self._name = 'CPU Temperature C'
         self.sensor_data = {
-            'CPU Temperature C': 00.0
+            'CPU Temperature C': 0.0
         }
 
     def read_sensor_data(self, data_queue):
-        result = subprocess.run(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE, text=True)
-        raw_output = result.stdout
-        cpu_temp = raw_output.replace('temp=', '').replace('\'C', '').strip()
-        self.sensor_data['CPU Temperature C'] = float(cpu_temp)
+        # Read from the CPU thermal zone file 
+        with open("/sys/class/thermal/thermal_zone0/temp", "r") as temp_file:
+            raw_temp = str(temp_file.readline)
+        raw_temp = raw_temp.strip()
+        # Convert from milli-C into C
+        cpu_temp = float(raw_temp) / 1000
+        self.sensor_data['CPU Temperature C'] = cpu_temp
+        # Send the data back to the parent process
         data_queue.put(self.sensor_data, block=False)
 
