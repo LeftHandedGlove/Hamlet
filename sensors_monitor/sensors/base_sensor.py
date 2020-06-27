@@ -14,7 +14,7 @@ class BaseSensor(multiprocessing.Process):
         super(BaseSensor, self).__init__()
         # Variables set by inheriting classes
         self._name = ""
-        self._sensor_data = dict()
+        self.sensor_data = dict()
         
         self.__state = self.unknown
         self.__poll_rate_hz = poll_rate_hz
@@ -49,9 +49,9 @@ class BaseSensor(multiprocessing.Process):
                     self.state = "OPERATIONAL"
                     read_sensor_data = reader_data_queue.get(block=False)
                     for attribute, value in read_sensor_data.items():
-                        self._sensor_data[attribute] = value
+                        self.sensor_data[attribute] = value
                 # Report the data
-                for attribute, value in self._sensor_data.items():
+                for attribute, value in self.sensor_data.items():
                     sql_query = ("UPDATE {table} "
                                  "SET value = {val}, state = '{state}' "
                                  "WHERE attribute = '{attr}'"
