@@ -8,6 +8,7 @@ from hamlet_common.mysql_database_connection import MySQLDatabaseConnection     
 
 class CPUTemperatureSensor(multiprocessing.Process):
     def __init__(self, poll_rate_hz, db_table, monitor_error_queue, monitor_index):
+        super(CPUTemperatureSensor, self).__init__()
         self.name = 'CPU Temperature C'
         self.sensor_data = {
             'CPU Temperature C': 00.0
