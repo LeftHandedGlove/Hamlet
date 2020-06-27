@@ -49,7 +49,7 @@ class CPUTemperatureSensor(multiprocessing.Process):
                     for attribute, value in read_sensor_data.items():
                         self.sensor_data[attribute] = value
                 # Report the data
-                for attribute, value in self.sensor_data:
+                for attribute, value in self.sensor_data.items():
                     sql_query = ("UPDATE {table} "
                                  "SET value = {val}, state = '{state}' "
                                  "WHERE attribute = '{attr}'"
