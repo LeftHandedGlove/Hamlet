@@ -9,17 +9,20 @@ else:
 
 import atexit
 import yaml
+import multiprocessing
+import time
 
 from hamlet_common.mysql_database_connection import MySQLDatabaseConnection
 from hamlet_common.python_utils import print_msg
-
 from sensors.cpu_temp_sensor import CPUTemperatureSensor
 
 class SensorsMonitor:
     def __init__(self):
         self.__db_conn = None
+        self.__error_queue = multiprocessing.Queue()
+        self.__data_queue = multiprocessing.Queue()
         self.__sensors = [
-            CPUTemperatureSensor()
+            CPUTemperatureSensor(poll_rate_hz=1, monitor_error_queue=self.__error_queue, db_table='sensor', monitor_index=0)
         ]
 
     def start(self):
@@ -39,6 +42,9 @@ class SensorsMonitor:
                              "VALUES ('{0}')"
                              .format(attribute))
                 self.__db_conn.command(sql_query)
+        # Start all of the sensor processes
+        for sensor in self.__sensors:
+            sensor.start()
         self.__run_continuously()
 
     def stop(self):
@@ -47,15 +53,10 @@ class SensorsMonitor:
         self.__db_conn.close_connection()
 
     def __run_once(self):
-        for sensor in self.__sensors:
-            sensor.update_sensor_data()
-            for attribute, value in sensor.sensor_data.items():
-                sql_query = ("UPDATE sensors "
-                             "SET value = {0}, state = '{1}' "
-                             "WHERE attribute = '{2}'"
-                             .format(value, sensor.state, attribute))
-                self.__db_conn.command(sql_query)
-
+        failed_process_index, failed_process_poll_rate = self.__error_queue.get(block=True)
+        failed_process_class = type(self.__sensors[failed_process_index])
+        self.__sensors[failed_process_index] = failed_process_class(poll_rate_hz=failed_process_poll_rate, db_table='sensor', monitor_error_queue=self.__error_queue, monitor_index=failed_process_index)
+        self.__sensors[failed_process_index].start()
     def __run_continuously(self):
         try:
             print_msg("Entering main loop")
