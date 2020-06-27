@@ -6,7 +6,7 @@ import traceback
 from hamlet_common.python_utils import print_msg                                # pylint: disable=import-error
 from hamlet_common.mysql_database_connection import MySQLDatabaseConnection     # pylint: disable=import-error
 
-from base_sensor import BaseSensor
+from .base_sensor import BaseSensor
 
 
 class CPUTemperatureSensor(BaseSensor):
