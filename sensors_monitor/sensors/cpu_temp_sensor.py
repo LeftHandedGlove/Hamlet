@@ -62,7 +62,8 @@ class CPUTemperatureSensor(multiprocessing.Process):
                 else:
                     print_msg("The {0} sensor process is falling behind!".format(self.name))
         except Exception as e:
-            traceback.print_tb(e.__traceback__)
+            traceback.print_exc()
+            print_msg(e)
             print_msg("The {0} sensor process has crashed!".format(self.name))
             queue_data = (self.__monitor_index, self.__poll_rate_hz)
             self.__monitor_error_queue.put(queue_data, block=False)
