@@ -12,11 +12,11 @@ class CPUTemperatureSensor(BaseSensor):
         self.sensor_data = {
             'CPU Temperature C': 0.0
         }
-
+        print(repr())
     def read_sensor_data(self, data_queue):
         # Read from the CPU thermal zone file 
         with open("/sys/class/thermal/thermal_zone0/temp", "r") as temp_file:
-            raw_temp = str(temp_file.readline)
+            raw_temp = str(temp_file.readline())
         raw_temp = raw_temp.strip()
         # Convert from milli-C into C
         cpu_temp = float(raw_temp) / 1000
