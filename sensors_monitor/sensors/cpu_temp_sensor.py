@@ -1,5 +1,3 @@
-import subprocess
-
 # pylint: disable=import-error
 from sensors.base_sensor import BaseSensor 
 # pylint: enable=import-error
