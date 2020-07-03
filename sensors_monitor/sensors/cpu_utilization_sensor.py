@@ -18,8 +18,8 @@ class CPUUtilizationSensor(BaseSensor):
         result = subprocess.run(["top", "-n", "1"], stdout=subprocess.PIPE, text=True)
         raw_output = result.stdout
         # Extract only the idle data
-        match = re.search(r' (?P<idle>\d+\.\d) id, ', raw_output)
-        idle_cpu = float(match.group('idle'))
+        match = re.search(r'(\s\d+\.\d)\sid,\s', raw_output)
+        idle_cpu = float(match.group(1))
         # Convert from idle to utilized
         utilized_cpu = 100 - idle_cpu
         self.sensor_data['CPU Utilization'] = utilized_cpu
