@@ -15,10 +15,10 @@ class CPUUtilizationSensor(BaseSensor):
         }
     def read_sensor_data(self, data_queue):
         # Run top to get CPU data
-        result = subprocess.run(["top", "-n", "1", "|", "grep", "'%Cpu'"], stdout=subprocess.PIPE, text=True)
+        result = subprocess.run(["top", "-n", "1"], stdout=subprocess.PIPE, text=True)
         raw_output = result.stdout
         # Extract only the idle data
-        idle_re_matcher = re.compile(r'(?P<idle>\d+\.\d) id')
+        idle_re_matcher = re.compile(r' (?P<idle>\d+\.\d) id, ')
         match = idle_re_matcher.search(raw_output)
         idle_cpu = float(match.group('idle'))
         # Convert from idle to utilized
