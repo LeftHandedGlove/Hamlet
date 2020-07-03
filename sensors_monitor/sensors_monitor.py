@@ -15,6 +15,7 @@ import time
 from hamlet_common.mysql_database_connection import MySQLDatabaseConnection
 from hamlet_common.python_utils import print_msg
 from sensors.cpu_temp_sensor import CPUTemperatureSensor
+from sensors.cpu_utilization_sensor import CPUUtilizationSensor
 
 class SensorsMonitor:
     def __init__(self):
@@ -28,6 +29,12 @@ class SensorsMonitor:
                 monitor_error_queue=self.__error_queue, 
                 db_table=self.__table_name, 
                 monitor_index=0
+            ),
+            CPUUtilizationSensor(
+                poll_rate_hz=5, 
+                monitor_error_queue=self.__error_queue, 
+                db_table=self.__table_name, 
+                monitor_index=1
             )
         ]
 
