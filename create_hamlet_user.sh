@@ -14,4 +14,8 @@ for group in $(groups pi); do
     fi
 done
 
-echo "Reboot the Raspberry Pi, login as 'hamlet', and delete the 'pi' user with 'userdel -r pi'"
+echo "The hamlet user has been created! Please perform the following:"
+echo "1) Disable auto-login as pi using 'sudo raspi-config'"
+echo "2) Reboot the Raspberry Pi using 'sudo reboot'"
+echo "3) Login as hamlet"
+echo "4) Delete the 'pi' user with 'userdel -r pi'"
