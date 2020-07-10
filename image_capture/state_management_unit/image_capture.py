@@ -38,5 +38,7 @@ while True:
     frame = rawCapture.array
     GPIO.output(stereo_response_out_gpio, 1)
     cv2.imwrite('stereo_cap.png', frame)
+    # clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
     time.sleep(0.1)
     GPIO.output(stereo_response_out_gpio, 0)

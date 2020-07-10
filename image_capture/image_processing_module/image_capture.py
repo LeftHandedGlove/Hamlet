@@ -47,4 +47,6 @@ while True:
     else:
         print("Bad Images")
     cv2.imwrite('stereo_cap.png', frame)
+    # clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
     time.sleep((1 / stereo_image_frequency_hz) - (time.time() - start_time))
