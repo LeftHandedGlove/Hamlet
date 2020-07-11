@@ -10,3 +10,5 @@ def producer():
         zmq_socket.send_string("String num: {0}".format(count))
         count += 1
         time.sleep(1)
+
+producer()
